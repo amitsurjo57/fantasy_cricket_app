@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "942478086379",
+    "firebase_url": "https://applications-7f5d0-default-rtdb.firebaseio.com",
+    "project_id": "applications-7f5d0",
+    "storage_bucket": "applications-7f5d0.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:942478086379:android:4da50b2c5ba37b23cf2eae",
+        "android_client_info": {
+          "package_name": "com.example.fantasy_cricket_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBFMRe8v9ktSGFGYu_DOpZE_NOhMIZh2Cw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
