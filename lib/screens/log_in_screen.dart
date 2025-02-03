@@ -142,8 +142,8 @@ class _LogInScreenState extends State<LogInScreen> {
     _inProgress = false;
     setState(() {});
 
-    if (!firebaseAuthClass.isEmailValid) {
-      if (!firebaseAuthClass.isPasswordCorrect) {
+    if (firebaseAuthClass.isEmailValid) {
+      if (firebaseAuthClass.isPasswordCorrect) {
         _navigateToHomeScreen();
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
