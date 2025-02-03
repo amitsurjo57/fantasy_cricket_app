@@ -1,6 +1,9 @@
 import 'package:fantasy_cricket_app/assets/app_assets.dart';
 import 'package:fantasy_cricket_app/screens/news_screen.dart';
 import 'package:fantasy_cricket_app/screens/score_screen.dart';
+import 'package:fantasy_cricket_app/screens/splash_screen.dart';
+import 'package:fantasy_cricket_app/services/firebase_auth_class.dart';
+import 'package:fantasy_cricket_app/services/user_auth.dart';
 import 'package:fantasy_cricket_app/utils/app_utils.dart';
 import 'package:flutter/material.dart';
 
@@ -61,12 +64,23 @@ class _HomeScreenState extends State<HomeScreen> {
       backgroundColor: AppUtils.primaryColor,
       title: Image.asset(AppAssets.appLogo, width: 130),
       actions: [
-        IconButton(
-          onPressed: () {},
-          icon: Icon(
-            Icons.notifications_outlined,
-            color: Colors.white,
-            size: 28,
+        TextButton(
+          onPressed: () async {
+            await FirebaseAuthClass().signOut();
+            await UserAuth().clearToken();
+            if (mounted) {
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => SplashScreen(),
+                ),
+                (_) => false,
+              );
+            }
+          },
+          child: Text(
+            "Log Out",
+            style: TextStyle(color: Colors.white, fontSize: 20),
           ),
         ),
       ],

@@ -1,4 +1,5 @@
 import 'package:fantasy_cricket_app/screens/splash_screen.dart';
+import 'package:fantasy_cricket_app/services/firebase_cloud_messaging.dart';
 import 'package:fantasy_cricket_app/utils/app_utils.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +10,7 @@ Future<void> main() async{
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  await FirebaseCloudMessaging.initialize();
   runApp(const MyApp());
 }
 

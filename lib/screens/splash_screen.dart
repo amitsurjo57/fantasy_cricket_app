@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:fantasy_cricket_app/assets/app_assets.dart';
 import 'package:fantasy_cricket_app/screens/home_screen.dart';
+import 'package:fantasy_cricket_app/screens/sign_up_screen.dart';
+import 'package:fantasy_cricket_app/services/user_auth.dart';
 import 'package:fantasy_cricket_app/utils/app_utils.dart';
 import 'package:flutter/material.dart';
 
@@ -16,13 +18,26 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     Timer(
       const Duration(seconds: 3),
-      () {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => HomeScreen(),
-          ),
-        );
+      () async {
+        if (await UserAuth().isLoggedIn()) {
+          if (mounted) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => HomeScreen(),
+              ),
+            );
+          }
+        } else {
+          if (mounted) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => SignInScreen(),
+              ),
+            );
+          }
+        }
       },
     );
     super.initState();

@@ -41,7 +41,7 @@ class _MatchDetailsScreenState extends State<MatchDetailsScreen> {
                   child: GestureDetector(
                     onTap: () {
                       _pageController.previousPage(
-                        duration: const Duration(milliseconds: 800),
+                        duration: const Duration(milliseconds: 500),
                         curve: Curves.easeInOut,
                       );
                     },

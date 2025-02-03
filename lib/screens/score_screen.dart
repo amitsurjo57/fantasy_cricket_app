@@ -42,7 +42,7 @@ class _ScoreScreenState extends State<ScoreScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               spacing: 16,
               children: [
-                _dropDownButton(),
+                _header(),
                 Expanded(
                   child: Visibility(
                     visible: _listOfMatch.isNotEmpty,
@@ -145,7 +145,7 @@ class _ScoreScreenState extends State<ScoreScreen> {
     }
   }
 
-  Row _dropDownButton() {
+  Row _header() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -157,33 +157,36 @@ class _ScoreScreenState extends State<ScoreScreen> {
             fontWeight: FontWeight.bold,
           ),
         ),
-        DropdownButton(
-          value: _currentValue,
-          alignment: Alignment.center,
-          dropdownColor: Colors.grey.shade300,
-          onChanged: (index) {
-            setState(() {
-              _currentValue = index;
-            });
-          },
-          items: [
-            DropdownMenuItem(
-              value: 'All',
-              child: Text("All"),
-            ),
-            DropdownMenuItem(
-              value: 'One Day',
-              child: Text("One Day"),
-            ),
-            DropdownMenuItem(
-              value: 'T20',
-              child: Text("T20"),
-            ),
-            DropdownMenuItem(
-              value: 'Test',
-              child: Text("Test"),
-            ),
-          ],
+        Card(
+          elevation: 4,
+          child: DropdownButton(
+            value: _currentValue,
+            alignment: Alignment.center,
+            dropdownColor: Colors.grey.shade300,
+            onChanged: (index) {
+              setState(() {
+                _currentValue = index;
+              });
+            },
+            items: [
+              DropdownMenuItem(
+                value: 'All',
+                child: Text("All"),
+              ),
+              DropdownMenuItem(
+                value: 'One Day',
+                child: Text("One Day"),
+              ),
+              DropdownMenuItem(
+                value: 'T20',
+                child: Text("T20"),
+              ),
+              DropdownMenuItem(
+                value: 'Test',
+                child: Text("Test"),
+              ),
+            ],
+          ),
         ),
       ],
     );
