@@ -1,59 +1,84 @@
+import 'package:fantasy_cricket_app/services/user_auth.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 
 class FirebaseAuthClass {
-  bool isUserNew = true;
-  bool isPasswordStrong = true;
-  bool isPasswordCorrect = true;
-  bool isEmailValid = true;
+  bool? isSuccess;
+  String? message;
+  bool inProgress = true;
 
-  UserCredential? userCredential;
-
-  Future<void> signUpUser(
-      {required String email, required String password}) async {
+  Future<void> signUpUser({
+    required String email,
+    required String password,
+  }) async {
     try {
+      UserAuth userAuth = UserAuth();
       final credential =
           await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
-      userCredential = credential;
+
       debugPrint("User Token ===> ${credential.user?.uid}");
+      await userAuth.saveUserToken(credential.user?.uid);
+      await userAuth.saveUserInfo(credential.user?.email);
+      isSuccess = true;
+      inProgress = false;
+      message = "Successfully Signed up";
     } on FirebaseAuthException catch (e) {
+      isSuccess = false;
       if (e.code == 'weak-password') {
-        isPasswordStrong = false;
-        debugPrint('The password provided is too weak.');
+        message = "Weak Password. Please give a strong password";
       } else if (e.code == 'email-already-in-use') {
-        isUserNew = false;
-        debugPrint('The account already exists for that email.');
+        message = "Email Already in Use";
       }
+      debugPrint(message);
     } catch (e) {
+      message = e.toString();
       debugPrint(e.toString());
     }
   }
 
-  Future<void> logInUser(
-      {required String email, required String password}) async {
+  Future<void> logInUser({
+    required String email,
+    required String password,
+  }) async {
     try {
+      UserAuth userAuth = UserAuth();
       final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
 
-      userCredential = credential;
       debugPrint("User Token ===> ${credential.user?.uid}");
-    } on FirebaseAuthException catch (e) {
-      if (e.code == 'user-not-found') {
-        isEmailValid = false;
-        debugPrint('No user found for that email.');
-      } else if (e.code == 'wrong-password') {
-        isPasswordCorrect = false;
-        debugPrint('Wrong password provided for that user.');
-      }
+      await userAuth.saveUserToken(credential.user?.uid);
+      await userAuth.saveUserInfo(credential.user?.email);
+      isSuccess = true;
+      inProgress = false;
+      message = "Successfully Logged in";
+    } on FirebaseAuthException catch (_) {
+      isSuccess = false;
+      inProgress = true;
+      message = "Email or Password is Incorrect";
+      debugPrint(message);
     }
   }
 
   Future<void> signOut() async {
     await FirebaseAuth.instance.signOut();
+  }
+
+  Future<void> deleteAccount() async {
+    await FirebaseAuth.instance.currentUser!.delete();
+  }
+  
+  Future<void> updatePassword({required String password}) async{
+    await FirebaseAuth.instance.currentUser!.updatePassword(password);
+  }
+
+  Future<void> resetPassword({required String email}) async{
+    await FirebaseAuth.instance.sendPasswordResetEmail(
+      email: email,
+    );
   }
 }
