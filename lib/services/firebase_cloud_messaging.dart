@@ -2,6 +2,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 
 class FirebaseCloudMessaging {
+
   static Future<void> initialize() async {
     FirebaseMessaging messaging = FirebaseMessaging.instance;
 
@@ -28,6 +29,8 @@ class FirebaseCloudMessaging {
 
     FirebaseMessaging.onBackgroundMessage(_messageHandler);
   }
+
+
 }
 
 Future<void> _messageHandler(RemoteMessage message) async {

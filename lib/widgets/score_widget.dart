@@ -181,20 +181,15 @@ class ScoreWidget extends StatelessWidget {
                 ),
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        scoreModel.prizeMoney,
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14,
-                        ),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      scoreModel.prizeMoney,
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
                       ),
-                      Icon(
-                        Icons.notification_add_outlined,
-                      )
-                    ],
+                    ),
                   ),
                 ),
               ),
