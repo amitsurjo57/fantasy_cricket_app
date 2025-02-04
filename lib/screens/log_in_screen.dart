@@ -18,6 +18,7 @@ class _LogInScreenState extends State<LogInScreen> {
   final TextEditingController _passwordController = TextEditingController();
   final GlobalKey<FormState> _globalKey = GlobalKey();
   bool _inProgress = false;
+  bool _isObscured = true;
 
   @override
   void dispose() {
@@ -138,6 +139,18 @@ class _LogInScreenState extends State<LogInScreen> {
           hintText: 'Enter Password',
           border: OutlineInputBorder(),
           prefixIcon: Icon(Icons.lock),
+          suffixIcon: GestureDetector(
+            onTap: () {
+              setState(() {
+                _isObscured = !_isObscured;
+              });
+            },
+            child: _isObscured
+                ? Icon(Icons.visibility)
+                : Icon(
+              Icons.visibility_off,
+            ),
+          ),
           filled: true,
           fillColor: Colors.white,
           errorStyle: TextStyle(
@@ -145,7 +158,7 @@ class _LogInScreenState extends State<LogInScreen> {
             fontSize: 14,
           ),
         ),
-        obscureText: true,
+        obscureText: _isObscured,
         validator: (String? value) {
           if (value == null || value.isEmpty) {
             return "Password Can't be Empty";

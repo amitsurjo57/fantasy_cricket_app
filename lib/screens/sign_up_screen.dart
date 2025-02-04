@@ -19,6 +19,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final GlobalKey<FormState> _globalKey = GlobalKey();
 
   bool _inProgress = false;
+  bool _isObscured = true;
 
   @override
   void dispose() {
@@ -159,6 +160,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
           hintText: 'Enter Password',
           border: OutlineInputBorder(),
           prefixIcon: Icon(Icons.lock),
+          suffixIcon: GestureDetector(
+            onTap: () {
+              setState(() {
+                _isObscured = !_isObscured;
+              });
+            },
+            child: _isObscured
+                ? Icon(Icons.visibility)
+                : Icon(
+                    Icons.visibility_off,
+                  ),
+          ),
           filled: true,
           fillColor: Colors.white,
           errorStyle: TextStyle(
@@ -166,7 +179,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             fontSize: 14,
           ),
         ),
-        obscureText: true,
+        obscureText: _isObscured,
         keyboardType: TextInputType.visiblePassword,
         validator: (String? value) {
           if (value == null || value.isEmpty) {
@@ -239,8 +252,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(
-            builder: (context) => HomeScreen(
-            ),
+            builder: (context) => HomeScreen(),
           ),
           (_) => false,
         );

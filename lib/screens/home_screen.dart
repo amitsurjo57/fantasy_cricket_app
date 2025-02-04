@@ -18,6 +18,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _currentScreen = 0;
   bool _inProgress = false;
+  bool _showPassword = false;
   final TextEditingController _passwordController = TextEditingController();
 
   final List _listOfScreen = [
@@ -140,7 +141,8 @@ class _HomeScreenState extends State<HomeScreen> {
     showDialog(
       context: context,
       builder: (context) => Dialog(
-          child: Container(
+        child: StatefulBuilder(
+          builder: (context, setState) => Container(
             height: 240,
             decoration: BoxDecoration(
               color: Colors.white,
@@ -173,7 +175,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         fontSize: 14,
                       ),
                     ),
-                    obscureText: true,
+                    obscureText: _showPassword ? false : true,
                     validator: (String? value) {
                       if (value == null || value.isEmpty) {
                         return "Password Can't be Empty";
@@ -181,6 +183,20 @@ class _HomeScreenState extends State<HomeScreen> {
                       return null;
                     },
                   ),
+                ),
+                Row(
+                  children: [
+                    Checkbox(
+                      value: _showPassword,
+                      onChanged: (value) {
+                        setState(() {
+                          _showPassword = value!;
+                        });
+                      },
+                      activeColor: AppUtils.primaryColor,
+                    ),
+                    Text("Show Password"),
+                  ],
                 ),
                 SizedBox(
                   width: double.infinity,
@@ -205,10 +221,11 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
         ),
+      ),
     );
   }
 
-  Future<void> _onClickUpdate() async{
+  Future<void> _onClickUpdate() async {
     _inProgress = true;
     setState(() {});
     await FirebaseAuthClass().updatePassword(
@@ -221,7 +238,7 @@ class _HomeScreenState extends State<HomeScreen> {
         MaterialPageRoute(
           builder: (context) => SignUpScreen(),
         ),
-            (_) => false,
+        (_) => false,
       );
     }
     _inProgress = false;
