@@ -157,36 +157,38 @@ class _ScoreScreenState extends State<ScoreScreen> {
             fontWeight: FontWeight.bold,
           ),
         ),
-        Card(
-          elevation: 4,
-          child: DropdownButton(
-            value: _currentValue,
-            alignment: Alignment.center,
-            dropdownColor: Colors.grey.shade300,
-            onChanged: (index) {
-              setState(() {
-                _currentValue = index;
-              });
-            },
-            items: [
-              DropdownMenuItem(
-                value: 'All',
-                child: Text("All"),
-              ),
-              DropdownMenuItem(
-                value: 'One Day',
-                child: Text("One Day"),
-              ),
-              DropdownMenuItem(
-                value: 'T20',
-                child: Text("T20"),
-              ),
-              DropdownMenuItem(
-                value: 'Test',
-                child: Text("Test"),
-              ),
-            ],
+        DropdownButton(
+          value: _currentValue,
+          underline: Container(
+            decoration: BoxDecoration(
+              border: Border(bottom: BorderSide(color: Colors.black)),
+            ),
           ),
+          alignment: Alignment.center,
+          dropdownColor: Colors.grey.shade300,
+          onChanged: (index) {
+            setState(() {
+              _currentValue = index;
+            });
+          },
+          items: [
+            DropdownMenuItem(
+              value: 'All',
+              child: Text("All"),
+            ),
+            DropdownMenuItem(
+              value: 'ODI',
+              child: Text("ODI"),
+            ),
+            DropdownMenuItem(
+              value: 'T20',
+              child: Text("T20"),
+            ),
+            DropdownMenuItem(
+              value: 'Test',
+              child: Text("Test"),
+            ),
+          ],
         ),
       ],
     );
