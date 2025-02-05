@@ -16,7 +16,8 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _currentScreen = 0;
-  bool _inProgress = false;
+  bool _inDeleteProgress = false;
+  bool _inUpdateProgress = false;
   bool _showPassword = false;
   final TextEditingController _passwordController = TextEditingController();
 
@@ -104,7 +105,7 @@ class _HomeScreenState extends State<HomeScreen> {
       width: double.infinity,
       height: 50,
       child: Visibility(
-        visible: !_inProgress,
+        visible: !_inDeleteProgress,
         replacement: const Center(
           child: CircularProgressIndicator(
             color: Colors.white,
@@ -245,7 +246,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 SizedBox(
                   width: double.infinity,
                   child: Visibility(
-                    visible: !_inProgress,
+                    visible: !_inUpdateProgress,
                     replacement: Center(
                       child: CircularProgressIndicator(),
                     ),
@@ -270,14 +271,14 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _onClickUpdate() async {
     FirebaseAuthClass firebaseAuthClass = FirebaseAuthClass();
 
-    _inProgress = true;
+    _inUpdateProgress = true;
     setState(() {});
 
     await firebaseAuthClass.updatePassword(
       password: _passwordController.text,
     );
 
-    _inProgress = false;
+    _inUpdateProgress = false;
     setState(() {});
 
     if (firebaseAuthClass.isSuccess!) {
@@ -317,12 +318,12 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _onClickDelete() async {
     FirebaseAuthClass firebaseAuthClass = FirebaseAuthClass();
 
-    _inProgress = true;
+    _inDeleteProgress = true;
     setState(() {});
 
     await firebaseAuthClass.deleteAccount();
 
-    _inProgress = false;
+    _inDeleteProgress = false;
     setState(() {});
 
     if (firebaseAuthClass.isSuccess!) {
