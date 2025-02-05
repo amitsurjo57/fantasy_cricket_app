@@ -21,7 +21,6 @@ class FirebaseAuthClass {
 
       debugPrint("User Token ===> ${credential.user?.uid}");
       await userAuth.saveUserToken(credential.user?.uid);
-      await userAuth.saveUserInfo(credential.user?.email);
       isSuccess = true;
       inProgress = false;
       message = "Successfully Signed up";
@@ -52,7 +51,6 @@ class FirebaseAuthClass {
 
       debugPrint("User Token ===> ${credential.user?.uid}");
       await userAuth.saveUserToken(credential.user?.uid);
-      await userAuth.saveUserInfo(credential.user?.email);
       isSuccess = true;
       inProgress = false;
       message = "Successfully Logged in";
@@ -64,21 +62,57 @@ class FirebaseAuthClass {
     }
   }
 
-  Future<void> signOut() async {
-    await FirebaseAuth.instance.signOut();
-  }
-
-  Future<void> deleteAccount() async {
-    await FirebaseAuth.instance.currentUser!.delete();
-  }
-  
-  Future<void> updatePassword({required String password}) async{
-    await FirebaseAuth.instance.currentUser!.updatePassword(password);
-  }
-
-  Future<void> resetPassword({required String email}) async{
+  Future<void> resetPassword({required String email}) async {
     await FirebaseAuth.instance.sendPasswordResetEmail(
       email: email,
     );
+  }
+
+  Future<void> deleteAccount() async {
+    try {
+      await FirebaseAuth.instance.currentUser!.delete();
+      isSuccess = true;
+      message = "Account Deleted Successfully.";
+      debugPrint("Account Deleted Successfully.");
+    } on FirebaseAuthException catch (e) {
+      isSuccess = false;
+      if (e.code == "requires-recent-login") {
+        message = "You Have to Login Again to Delete Your Account";
+        debugPrint("You Have to Login Again to Delete Your Account");
+      } else {
+        message = "Something Went Wrong";
+        debugPrint("Something Went Wrong ==> ${e.toString()}");
+      }
+    } catch (e) {
+      isSuccess = false;
+      message = "Something Went Wrong";
+      debugPrint("Something Went Wrong ==> ${e.toString()}");
+    }
+  }
+
+  Future<void> updatePassword({required String password}) async {
+    try {
+      await FirebaseAuth.instance.currentUser!.updatePassword(password);
+      isSuccess = true;
+      message = "Password Updated Successfully.";
+      debugPrint("Password Updated Successfully.");
+    } on FirebaseAuthException catch (e) {
+      isSuccess = false;
+      if (e.code == "requires-recent-login") {
+        message = "You Have to Login Again to Update Your Password";
+        debugPrint("You Have to Login Again to Update Your Password");
+      } else {
+        message = "Something Went Wrong";
+        debugPrint("Something Went Wrong ==> ${e.toString()}");
+      }
+    } catch (e) {
+      isSuccess = false;
+      message = "Something Went Wrong";
+      debugPrint("Something Went Wrong ==> ${e.toString()}");
+    }
+  }
+
+  Future<void> signOut() async {
+    await FirebaseAuth.instance.signOut();
   }
 }

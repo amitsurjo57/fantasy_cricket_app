@@ -40,7 +40,6 @@ class _LogInScreenState extends State<LogInScreen> {
             ],
             begin: Alignment.topRight,
             end: Alignment.bottomLeft,
-            stops: [0, 0.5, 1],
           ),
         ),
         child: Center(

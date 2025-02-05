@@ -41,7 +41,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
             ],
             begin: Alignment.topRight,
             end: Alignment.bottomLeft,
-            stops: [0, 0.5, 1],
           ),
         ),
         child: Center(
@@ -184,6 +183,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
         validator: (String? value) {
           if (value == null || value.isEmpty) {
             return "Password Can't be Empty";
+          } else if (_passwordController.text.length < 6) {
+            return "Password Should Contain at least 6 Character";
           }
           return null;
         },

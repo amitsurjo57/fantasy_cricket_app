@@ -2,7 +2,6 @@ import 'package:fantasy_cricket_app/assets/app_assets.dart';
 import 'package:fantasy_cricket_app/screens/news_screen.dart';
 import 'package:fantasy_cricket_app/screens/score_screen.dart';
 import 'package:fantasy_cricket_app/screens/sign_up_screen.dart';
-import 'package:fantasy_cricket_app/screens/splash_screen.dart';
 import 'package:fantasy_cricket_app/services/firebase_auth_class.dart';
 import 'package:fantasy_cricket_app/services/user_auth.dart';
 import 'package:fantasy_cricket_app/utils/app_utils.dart';
@@ -45,11 +44,22 @@ class _HomeScreenState extends State<HomeScreen> {
   Drawer _buildDrawer() {
     return Drawer(
       backgroundColor: Colors.white,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 32),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              Colors.black,
+              AppUtils.primaryColor,
+              Colors.black,
+            ],
+            begin: Alignment.topRight,
+            end: Alignment.bottomLeft,
+          ),
+        ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          spacing: 16,
+          spacing: 24,
           children: [
             _updatePasswordButton(),
             _deleteAccountButton(),
@@ -93,27 +103,23 @@ class _HomeScreenState extends State<HomeScreen> {
     return SizedBox(
       width: double.infinity,
       height: 50,
-      child: ElevatedButton.icon(
-        onPressed: () async {
-          await FirebaseAuthClass().deleteAccount();
-          await UserAuth().clearData();
-          if (mounted) {
-            Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(
-                builder: (context) => SplashScreen(),
-              ),
-              (_) => false,
-            );
-          }
-        },
-        label: Text("Delete Account"),
-        icon: Icon(Icons.delete),
-        style: ElevatedButton.styleFrom(
-          foregroundColor: Colors.red,
-          iconColor: Colors.red,
-          textStyle: TextStyle(fontSize: 20),
-          iconSize: 28,
+      child: Visibility(
+        visible: !_inProgress,
+        replacement: const Center(
+          child: CircularProgressIndicator(
+            color: Colors.white,
+          ),
+        ),
+        child: ElevatedButton.icon(
+          onPressed: _onClickDelete,
+          label: Text("Delete Account"),
+          icon: Icon(Icons.delete),
+          style: ElevatedButton.styleFrom(
+            foregroundColor: Colors.red,
+            iconColor: Colors.red,
+            textStyle: TextStyle(fontSize: 20),
+            iconSize: 28,
+          ),
         ),
       ),
     );
@@ -124,7 +130,7 @@ class _HomeScreenState extends State<HomeScreen> {
       width: double.infinity,
       height: 50,
       child: ElevatedButton.icon(
-        onPressed: _onPressedUpdatePassword,
+        onPressed: _onTapUpdatePasswordButton,
         label: Text("Update Password"),
         icon: Icon(Icons.lock),
         style: ElevatedButton.styleFrom(
@@ -137,7 +143,43 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  void _onPressedUpdatePassword() {
+  BottomNavigationBar _buildBottomNavigationBar() {
+    return BottomNavigationBar(
+      backgroundColor: AppUtils.primaryColor.withAlpha(200),
+      iconSize: 24,
+      selectedFontSize: 16,
+      selectedIconTheme: IconThemeData(size: 32),
+      selectedLabelStyle: TextStyle(fontWeight: FontWeight.bold),
+      selectedItemColor: AppUtils.loaderColor,
+      unselectedItemColor: Colors.white,
+      currentIndex: _currentScreen,
+      onTap: (index) {
+        setState(() {
+          _currentScreen = index;
+        });
+      },
+      items: [
+        BottomNavigationBarItem(
+          icon: Icon(Icons.sports_cricket_outlined),
+          label: 'Live Matches',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.newspaper_outlined),
+          label: 'News',
+        ),
+      ],
+    );
+  }
+
+  AppBar _buildAppBar() {
+    return AppBar(
+      backgroundColor: AppUtils.primaryColor,
+      title: Image.asset(AppAssets.appLogo, width: 130),
+      iconTheme: IconThemeData(color: Colors.white),
+    );
+  }
+
+  void _onTapUpdatePasswordButton() {
     showDialog(
       context: context,
       builder: (context) => Dialog(
@@ -179,6 +221,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     validator: (String? value) {
                       if (value == null || value.isEmpty) {
                         return "Password Can't be Empty";
+                      } else if (_passwordController.text.length < 6) {
+                        return "Password Should Contain at least 6 Character";
                       }
                       return null;
                     },
@@ -203,9 +247,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Visibility(
                     visible: !_inProgress,
                     replacement: Center(
-                      child: CircularProgressIndicator(
-                        color: AppUtils.primaryColor,
-                      ),
+                      child: CircularProgressIndicator(),
                     ),
                     child: ElevatedButton(
                       onPressed: _onClickUpdate,
@@ -226,58 +268,94 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _onClickUpdate() async {
+    FirebaseAuthClass firebaseAuthClass = FirebaseAuthClass();
+
     _inProgress = true;
     setState(() {});
-    await FirebaseAuthClass().updatePassword(
+
+    await firebaseAuthClass.updatePassword(
       password: _passwordController.text,
     );
-    await UserAuth().clearData();
-    if (mounted) {
-      Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(
-          builder: (context) => SignUpScreen(),
-        ),
-        (_) => false,
-      );
-    }
+
     _inProgress = false;
     setState(() {});
+
+    if (firebaseAuthClass.isSuccess!) {
+      await UserAuth().clearData();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(firebaseAuthClass.message!),
+          ),
+        );
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(
+            builder: (context) => SignUpScreen(),
+          ),
+          (_) => false,
+        );
+      }
+    } else {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(firebaseAuthClass.message!),
+          ),
+        );
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(
+            builder: (context) => SignUpScreen(),
+          ),
+          (_) => false,
+        );
+      }
+    }
   }
 
-  BottomNavigationBar _buildBottomNavigationBar() {
-    return BottomNavigationBar(
-      backgroundColor: AppUtils.primaryColor.withAlpha(200),
-      iconSize: 24,
-      selectedFontSize: 16,
-      selectedIconTheme: IconThemeData(size: 32),
-      selectedLabelStyle: TextStyle(fontWeight: FontWeight.bold),
-      selectedItemColor: AppUtils.loaderColor,
-      unselectedItemColor: Colors.white,
-      currentIndex: _currentScreen,
-      onTap: (index) {
-        setState(() {
-          _currentScreen = index;
-        });
-      },
-      items: [
-        BottomNavigationBarItem(
-          icon: Icon(Icons.sports_cricket_outlined),
-          label: 'Live Matches',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.newspaper_outlined),
-          label: 'News',
-        ),
-      ],
-    );
-  }
+  Future<void> _onClickDelete() async {
+    FirebaseAuthClass firebaseAuthClass = FirebaseAuthClass();
 
-  AppBar _buildAppBar() {
-    return AppBar(
-      backgroundColor: AppUtils.primaryColor,
-      title: Image.asset(AppAssets.appLogo, width: 130),
-      iconTheme: IconThemeData(color: Colors.white),
-    );
+    _inProgress = true;
+    setState(() {});
+
+    await firebaseAuthClass.deleteAccount();
+
+    _inProgress = false;
+    setState(() {});
+
+    if (firebaseAuthClass.isSuccess!) {
+      await UserAuth().clearData();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(firebaseAuthClass.message!),
+          ),
+        );
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(
+            builder: (context) => SignUpScreen(),
+          ),
+          (_) => false,
+        );
+      }
+    } else {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(firebaseAuthClass.message!),
+          ),
+        );
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(
+            builder: (context) => SignUpScreen(),
+          ),
+          (_) => false,
+        );
+      }
+    }
   }
 }
